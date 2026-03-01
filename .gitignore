@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+#sonradan eklemeler
+*.pyc
+uv.lock
+
+# Veri Klasörleri
+raw_data/
+processed_data/
+*.zip
+*.pt
+*.tar
+# VS Code & OS
+.vscode/
+.DS_Store
