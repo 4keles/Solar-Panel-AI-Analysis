@@ -1,0 +1,25 @@
+# Dataset registry: raw paths are read-only; outputs go under processed_data_root / output_subdir.
+# class_names order must match YOLO label class indices (0 .. nc-1).
+# split_map keys: train / val / test are Ultralytics logical names; values are folder names under raw_root.
+
+processed_data_root: data/processed_data
+
+datasets:
+  mvp_test:
+    raw_root: data/raw_data/test
+    output_subdir: mvp_test_v1
+    modalities: [rgb]
+    class_names:
+      - physical_damage
+      - bird_drop
+      - dust_particle
+      - leaf
+      - snow
+      - electrical_damage_hotspot
+      - healthy
+    images_subdir: images
+    labels_subdir: labels
+    split_map:
+      train: train
+      val: valid
+      test: test

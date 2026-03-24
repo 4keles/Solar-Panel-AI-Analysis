@@ -1,9 +1,12 @@
 [project]
-name = "solar-panel-od"
+name = "Solar-Panel-AI-Analysis"
 version = "0.1.0"
-description = "Add your description here"
+description = "Multi-Modal (RGB & Thermal) Solar Panel Object Detection System YOLO-based object detection pipeline for identifying and classifying specific defects in solar panels using both RGB and thermal imagery. Includes preprocessing, custom labeling workflows, and Dockerized deployment"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 dependencies = [
+    "albumentations>=2.0.8",
     "label-studio>=1.22.0",
+    "opencv-python>=4.13.0.92",
+    "ultralytics>=8.4.19",
 ]

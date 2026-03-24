@@ -1,0 +1,10 @@
+Kullanım örnekleri : "resize_to_640_letterbox.py"
+
+    Siyah pad ile:
+        python resize_to_640_letterbox.py ./raw_images ./images_640
+    Orta-gri pad (128):
+        python resize_to_640_letterbox.py ./raw_images ./images_640 --color 128
+    RGB pad (beyaz):
+        python resize_to_640_letterbox.py ./raw_images ./images_640 --color 255 255 255
+    Alt klasörleriyle birlikte işle:
+        python resize_to_640_letterbox.py ./raw_images ./images_640 --recursive --overwrite
