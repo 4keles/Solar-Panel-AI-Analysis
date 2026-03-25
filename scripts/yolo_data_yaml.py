@@ -23,7 +23,8 @@ def write_data_yaml(
 ) -> None:
     """Write YOLO data config. Paths train/val/test are relative to dataset_root."""
     nc = len(class_names)
-    names: dict[int, str] | list[str] = {i: n for i, n in enumerate(class_names)}
+    # 'names' as list keeps compatibility with scripts expecting list-like indexing.
+    names: list[str] = list(class_names)
     payload: dict[str, Any] = {
         "path": str(dataset_root.resolve()),
         "train": train_images_rel,
