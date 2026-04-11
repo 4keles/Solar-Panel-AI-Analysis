@@ -30,7 +30,6 @@ datasets:
     - dust_particle
     - leaf
     - snow
-    - electrical_damage_hotspot
     - healthy
     - bird_feather
     images_subdir: images
@@ -49,7 +48,6 @@ datasets:
     - dust_particle
     - leaf
     - snow
-    - electrical_damage_hotspot
     - healthy
     - bird_feather
     images_subdir: images
