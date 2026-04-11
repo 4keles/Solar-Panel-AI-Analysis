@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Copy or symlink raw YOLO splits into data/processed_data without modifying raw_data."""
+"""Copy or symlink raw YOLO splits into processed_data with validation."""
 
 from __future__ import annotations
 
@@ -7,30 +7,31 @@ import argparse
 import shutil
 from collections import defaultdict
 from pathlib import Path
-from typing import Any
 
 from dataset_common import get_dataset_entry, load_registry, project_root, resolve_under
 from yolo_data_yaml import write_for_registry_dataset
 
+try:
+    from utils.logger import get_logger
+except Exception:  # pragma: no cover
+    from scripts.utils.logger import get_logger
+
 IMAGE_EXT = {".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif", ".webp"}
+logger = get_logger(__name__)
 
 
 def _iter_images(images_dir: Path) -> list[Path]:
     if not images_dir.is_dir():
         return []
-    out: list[Path] = []
-    for p in sorted(images_dir.iterdir()):
-        if p.is_file() and p.suffix.lower() in IMAGE_EXT:
-            out.append(p)
-    return out
+    return [p for p in sorted(images_dir.iterdir()) if p.is_file() and p.suffix.lower() in IMAGE_EXT]
 
 
 def _validate_label_lines(label_path: Path, nc: int) -> list[str]:
     errors: list[str] = []
     try:
         text = label_path.read_text(encoding="utf-8")
-    except OSError as e:
-        return [f"{label_path}: read error: {e}"]
+    except OSError as exc:
+        return [f"{label_path}: read error: {exc}"]
     for lineno, line in enumerate(text.splitlines(), 1):
         line = line.strip()
         if not line:
@@ -51,19 +52,15 @@ def _scan_label_classes(labels_dir: Path) -> dict[int, int]:
     if not labels_dir.is_dir():
         return counts
     for txt in sorted(labels_dir.glob("*.txt")):
-        try:
-            for line in txt.read_text(encoding="utf-8").splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                parts = line.split()
-                try:
-                    cid = int(parts[0])
-                except ValueError:
-                    continue
-                counts[cid] += 1
-        except OSError:
-            continue
+        for line in txt.read_text(encoding="utf-8", errors="ignore").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split()
+            try:
+                counts[int(parts[0])] += 1
+            except (ValueError, IndexError):
+                continue
     return dict(counts)
 
 
@@ -78,101 +75,86 @@ def prepare_dataset(
     root = project_root()
     registry = load_registry()
     entry = get_dataset_entry(registry, dataset_id)
+
     raw_root = resolve_under(root, entry["raw_root"])
     processed_root = resolve_under(root, registry["processed_data_root"])
     output_subdir = entry["output_subdir"]
     out_dataset = (processed_root / output_subdir).resolve()
+
     class_names: list[str] = list(entry["class_names"])
     nc = len(class_names)
     split_map: dict[str, str] = dict(entry["split_map"])
-    images_sub = entry["images_subdir"]
-    labels_sub = entry["labels_subdir"]
+    images_sub = entry.get("images_subdir", "images")
+    labels_sub = entry.get("labels_subdir", "labels")
 
-    if out_dataset.exists():
+    if out_dataset.exists() and not use_symlinks:
         shutil.rmtree(out_dataset)
     out_dataset.mkdir(parents=True, exist_ok=True)
 
-    required_logical = ("train", "val")
-    for logical in required_logical:
+    target_names = {"train": "train", "val": "val", "test": "test"}
+
+    for logical in ("train", "val"):
         if logical not in split_map:
             raise KeyError(f"split_map must include {logical!r}")
 
-    for logical, folder_name in split_map.items():
-        src_split = (raw_root / folder_name).resolve()
-        dst_split = (out_dataset / folder_name).resolve()
+    for logical, source_folder in split_map.items():
+        src_split = (raw_root / source_folder).resolve()
+        dst_split = (out_dataset / target_names.get(logical, logical)).resolve()
+
         if not src_split.is_dir():
-            if logical in required_logical:
+            if logical in {"train", "val"}:
                 raise FileNotFoundError(f"Required split missing: {src_split}")
-            print(f"Warning: optional split {logical!r} skipped (missing {src_split})")
+            logger.info("optional_split_missing", split=logical, source=str(src_split))
             continue
 
         if use_symlinks:
+            if dst_split.exists() or dst_split.is_symlink():
+                dst_split.unlink()
             dst_split.symlink_to(src_split, target_is_directory=True)
         else:
-            shutil.copytree(
-                src_split,
-                dst_split,
-                symlinks=False,
-                ignore_dangling_symlinks=True,
-                dirs_exist_ok=True,
-            )
+            shutil.copytree(src_split, dst_split, dirs_exist_ok=True)
 
-        src_images = src_split / images_sub
-        src_labels = src_split / labels_sub
-        # After copy, dst has same structure; validate on destination
-        dst_images = dst_split / images_sub
-        dst_labels = dst_split / labels_sub
+        check_images = dst_split / images_sub
+        check_labels = dst_split / labels_sub
 
-        if not use_symlinks and dst_images.is_dir() and dst_labels.is_dir():
-            all_errors: list[str] = []
-            images = _iter_images(dst_images)
-            label_stems = {p.stem for p in dst_labels.glob("*.txt")}
+        if check_images.is_dir() and check_labels.is_dir():
+            images = _iter_images(check_images)
+            label_stems = {p.stem for p in check_labels.glob("*.txt")}
             image_stems = {p.stem for p in images}
             for stem in sorted(image_stems - label_stems):
-                print(f"Warning: image without label: {stem} ({logical}/{images_sub})")
+                logger.info("image_without_label", split=logical, stem=stem)
             for stem in sorted(label_stems - image_stems):
-                print(f"Warning: label without image: {stem} ({logical}/{labels_sub})")
-            for lbl in sorted(dst_labels.glob("*.txt")):
+                logger.info("label_without_image", split=logical, stem=stem)
+
+            all_errors: list[str] = []
+            for lbl in sorted(check_labels.glob("*.txt")):
                 all_errors.extend(_validate_label_lines(lbl, nc))
             if all_errors:
                 for msg in all_errors[:50]:
-                    print(f"Label issue: {msg}")
-                if len(all_errors) > 50:
-                    print(f"... {len(all_errors) - 50} more label issues")
+                    logger.warning("label_issue", message=msg)
                 if strict_labels:
-                    raise ValueError("Strict label validation failed")
-        elif use_symlinks and src_images.is_dir() and src_labels.is_dir():
-            # Validate on source when symlinked (read-only raw)
-            for lbl in sorted(src_labels.glob("*.txt")):
-                errs = _validate_label_lines(lbl, nc)
-                for msg in errs[:20]:
-                    print(f"Label issue: {msg}")
-                if strict_labels and errs:
                     raise ValueError("Strict label validation failed")
 
         if scan_labels:
-            scan_dir = src_labels if use_symlinks else dst_labels
-            dist = _scan_label_classes(scan_dir)
-            print(f"Class counts in labels ({logical}): {dict(sorted(dist.items()))}")
+            counts = _scan_label_classes(check_labels)
+            logger.info("class_counts", split=logical, counts=counts)
 
     if write_yaml:
         yaml_path = write_for_registry_dataset(dataset_id, registry=registry, check_only=False)
-        print(f"Wrote data yaml: {yaml_path}")
+        logger.info("dataset_yaml_written", path=str(yaml_path))
+
     return out_dataset
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Prepare processed YOLO dataset from raw (no raw writes).")
-    ap.add_argument("--dataset", required=True, help="Registry dataset id (e.g. mvp_test)")
-    ap.add_argument("--link", action="store_true", help="Symlink split folders instead of copying")
-    ap.add_argument("--scan-labels", action="store_true", help="Print class id histograms per split")
-    ap.add_argument(
-        "--strict-labels",
-        action="store_true",
-        help="Exit with error if any label line has invalid class id",
-    )
-    ap.add_argument("--no-yaml", action="store_true", help="Do not write data.yaml after prep")
-    args = ap.parse_args()
+    parser = argparse.ArgumentParser(description="Prepare processed YOLO dataset from raw data")
+    parser.add_argument("--dataset", required=True, help="Registry dataset id (e.g. mvp_test)")
+    parser.add_argument("--link", action="store_true", help="Symlink split folders instead of copy")
+    parser.add_argument("--scan-labels", action="store_true", help="Print class histogram")
+    parser.add_argument("--strict-labels", action="store_true", help="Fail on invalid class id")
+    parser.add_argument("--no-yaml", action="store_true", help="Skip writing data yaml")
+    args = parser.parse_args()
+
     prepare_dataset(
         args.dataset,
         use_symlinks=args.link,

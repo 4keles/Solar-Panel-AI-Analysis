@@ -5,7 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-import yaml
+try:
+    from utils.config_loader import load_config
+except Exception:  # pragma: no cover
+    from scripts.utils.config_loader import load_config
 
 
 def project_root() -> Path:
@@ -17,8 +20,7 @@ def registry_path() -> Path:
 
 
 def load_registry() -> dict[str, Any]:
-    with open(registry_path(), encoding="utf-8") as f:
-        data = yaml.safe_load(f)
+    data = load_config(registry_path())
     if not isinstance(data, dict):
         raise ValueError("dataset_registry.yaml must be a mapping at the top level")
     return data

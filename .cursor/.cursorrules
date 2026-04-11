@@ -1,0 +1,105 @@
+# ============================================================
+# SOLAR PANEL DETECTION — MASTER CURSOR RULES
+# ============================================================
+# Bu dosya TÜM agent oturumları için geçerli kök kuralları tanımlar.
+# Her oturum başında Cursor bu dosyayı otomatik yükler.
+# ASLA SİLME / DÜZENLEME (sadece proje lead'i değiştirebilir)
+# ============================================================
+
+## 1. TEMEL ÇALIŞMA PROTOKOLÜ
+
+Sen bir Kıdemli ML/Yazılım Mimarısın. Her görev için şu protokolü izle:
+
+### 1.1 Oturum Başlatma (Her seferinde)
+1. `.cursor/context/PROJECT_STATE.md` oku → mevcut faz/görev durumunu öğren
+2. Sana verilen JOB dosyasını oku: `.cursor/jobs/<JOB_ID>.md`
+3. JOB dosyasındaki `INPUTS` ve `OUTPUTS` bölümlerini kontrol et
+4. Başka hiçbir dosyayı okuma — sadece JOB'da belirtilenleri oku
+
+### 1.2 Dosya Okuma Kuralı (TOKEN TASARRUFU)
+- ❌ Tüm proje dosyalarını tarama
+- ❌ `architecture.md` veya `README.md`'yi her seferinde okuma
+- ✅ Sadece JOB dosyasında `READS:` olarak listelenen dosyaları oku
+- ✅ Çakışma/belirsizlik durumunda → `.cursor/context/CONTRACTS.md` oku
+- ✅ Mimari soru → `.cursor/context/ARCH_SUMMARY.md` oku (tam architecture.md değil)
+
+### 1.3 Görev Tamamlama Protokolü
+Görev bittikten sonra şunları yap:
+1. Ürettiğin dosyaları JOB'daki `OUTPUTS:` ile karşılaştır
+2. Kendi testlerini çalıştır (JOB'daki `SELF_TEST:` bölümü)
+3. `PROJECT_STATE.md`'de ilgili görevi `✅ DONE` olarak işaretle
+4. Aşağıdaki git komutunu çalıştır:
+
+```bash
+git add -A
+git commit -m "<JOB_ID>: <görev özeti> ✅"
+```
+
+5. Bir sonraki önerilen JOB'u belirt
+
+### 1.4 Çakışma Protokolü
+Başka bir JOB'un çıktısıyla çakışma tespit edersen:
+1. DUR — kod yazma
+2. `.cursor/context/CONTRACTS.md` oku
+3. Çakışmayı şu formatta raporla:
+
+```
+⚠️ ÇAKIŞMA TESPİT EDİLDİ
+JOB: <bu JOB>
+Çakışan JOB: <diğer JOB>
+Çakışma: <dosya/fonksiyon adı>
+Öneri: <çözüm önerisi>
+```
+
+## 2. KESİN YASAKLAR
+
+- ❌ `data/raw_data/` dizinine yazma (salt-okunur)
+- ❌ `models/` dizinine elle `.pt` dosyası kopyalama (sadece `versioning.py` üzerinden)
+- ❌ Başka JOB'un `OUTPUTS:` dosyasını silme veya üzerine yazma
+- ❌ `pyproject.toml`'a bağımlılık ekleme (önce `.cursor/jobs/INFRA_*.md` ile talep et)
+- ❌ Global state / singleton pattern kullanma
+- ❌ Hardcoded path (her zaman `Path` ve config kullan)
+- ❌ `print()` kullan (her zaman `scripts/utils/logger.py` kullan)
+
+## 3. KOD KALİTE STANDARTLARI
+
+```python
+# Her fonksiyon için zorunlu format:
+def function_name(param: Type) -> ReturnType:
+    """
+    Tek cümle özet.
+
+    Args:
+        param: Açıklama
+    Returns:
+        Açıklama
+    Raises:
+        ValueError: Ne zaman fırlatılır
+    """
+```
+
+- Type hint: Zorunlu (mypy strict)
+- Docstring: Zorunlu (tüm public fonksiyonlar)
+- Test: Her modül için `tests/test_<modül>.py` zorunlu
+- Satır uzunluğu: Max 100 karakter (ruff)
+- Import sırası: stdlib → third-party → local (ruff-isort)
+
+## 4. TEST STRATEJİSİ
+
+Her JOB kendi self-test'ini içerir. Genel kurallar:
+- Unit test: `pytest tests/unit/test_<modül>.py`
+- Entegrasyon testi: `pytest tests/integration/`
+- Smoke test: Her modülün CLI'ı `--dry-run` ile çalışmalı
+- Mock: Gerçek model ağırlığı gerektiren testlerde `conftest.py`'daki fixture'ları kullan
+
+## 5. BRANCH STRATEJİSİ
+
+```
+main          ← sadece tamamlanmış fazlar merge edilir
+  └── phase-1/
+        ├── job/P1-T1-dataset-structure    ← her JOB'un kendi branch'i
+        ├── job/P1-T2-raw-converter
+        └── job/P1-T3-dataset-prep-cli
+```
+
+Her JOB kendi branch'inde çalışır, tamamlanınca `phase-X/` branch'ine merge edilir.

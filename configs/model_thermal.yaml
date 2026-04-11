@@ -1,0 +1,22 @@
+# Thermal YOLO Model Configuration
+model: yolo11n.pt           # Base model
+data: data/processed_data/thermal_master/data.yaml
+epochs: 100
+imgsz: 640
+batch: 16
+workers: 8
+
+# Hyperparameters (Augmentations could be tweaked for Thermal)
+# e.g., HSV changes might not be as effective on thermal if it's pseudocolor
+hsv_h: 0.0
+hsv_s: 0.0
+hsv_v: 0.0
+degrees: 0.0
+translate: 0.1
+scale: 0.5
+shear: 0.0
+perspective: 0.0
+flipud: 0.0
+fliplr: 0.5
+mosaic: 1.0
+mixup: 0.0

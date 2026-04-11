@@ -1,0 +1,20 @@
+# configs/dataset_rgb.yaml (data.yaml yerine configs/ altinda olacak)
+path: data/processed_data/rgb/mvp_v1
+train: train/images
+val:   valid/images
+test:  test/images
+
+nc: 7
+names:
+  0: physical_damage
+  1: bird_drop
+  2: dust_particle
+  3: leaf
+  4: snow
+  5: electrical_damage_hotspot
+  6: healthy
+
+# Veri seti bilgileri
+modality: rgb
+version: mvp_v1
+notes: "Ilk etiketli MVP veri seti. Diger ham veriler etiketlenmemis."

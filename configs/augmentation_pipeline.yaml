@@ -1,0 +1,14 @@
+transforms:
+- HorizontalFlip:
+    p: 0.5
+- VerticalFlip:
+    p: 0.2
+- RandomBrightnessContrast:
+    brightness_limit: 0.2
+    contrast_limit: 0.2
+    p: 0.5
+- GaussNoise:
+    std_range:
+    - 0.01
+    - 0.03
+    p: 0.2

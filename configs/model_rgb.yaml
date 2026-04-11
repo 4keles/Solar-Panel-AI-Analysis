@@ -1,0 +1,21 @@
+# RGB YOLO Model Configuration
+model: yolo11n.pt           # Base model
+data: data/processed_data/rgb_master/data.yaml
+epochs: 100
+imgsz: 640
+batch: 16
+workers: 8
+
+# Hyperparameters (Augmentations could be tweaked for RGB)
+hsv_h: 0.015
+hsv_s: 0.7
+hsv_v: 0.4
+degrees: 0.0
+translate: 0.1
+scale: 0.5
+shear: 0.0
+perspective: 0.0
+flipud: 0.0
+fliplr: 0.5
+mosaic: 1.0
+mixup: 0.0
