@@ -1,0 +1,18 @@
+# Lokal gelistirme profili (4GB VRAM)
+model: yolo11n.pt        # En kucuk model - lokal icin zorunlu
+data: configs/dataset_rgb.yaml
+imgsz: 416               # 640 yerine 416: VRAM'i azaltir
+epochs: 50               # Test icin kisa, gercek egitimde 100-150 yap
+batch: 4                 # 4GB VRAM icin guvenli baslangic (OOM alirsan 2'ye cek)
+workers: 4               # Ryzen 7 icin uygun
+device: 0                # GPU kullan (cuda:0)
+half: false              # FP16 - once false dene, stabil olunca true yap
+cos_lr: true             # Ogrenme hizi duzgun azalsin
+patience: 15             # 15 epoch iyilesme yoksa dur
+project: runs/detect
+name: solar_local
+
+# Bellek kurtarma ayarlari
+cache: false             # RAM'i zorlamaz ama egitim biraz yavaslar
+# NOT: OOM hatasi alirsan batch: 2 yap
+# NOT: Hala OOM alirsan imgsz: 320 yap

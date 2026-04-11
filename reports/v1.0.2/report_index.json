@@ -1,0 +1,20 @@
+{
+  "source_run_dir": "/home/kayra/git/solar_panel_od/runs/detect/solar_mvp3",
+  "copied_files": [
+    "confusion_matrix.png",
+    "confusion_matrix_normalized.png",
+    "results.png",
+    "train_batch0.jpg",
+    "train_batch1.jpg",
+    "train_batch106110.jpg",
+    "train_batch106111.jpg",
+    "train_batch106112.jpg",
+    "train_batch2.jpg",
+    "val_batch0_labels.jpg",
+    "val_batch0_pred.jpg",
+    "val_batch1_labels.jpg",
+    "val_batch1_pred.jpg",
+    "val_batch2_labels.jpg",
+    "val_batch2_pred.jpg"
+  ]
+}

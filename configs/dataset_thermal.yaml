@@ -1,0 +1,12 @@
+# configs/dataset_thermal.yaml
+path: data/processed_data/thermal/v1
+train: train/images
+val:   valid/images
+test:  test/images
+
+nc: 0        # henuz etiketlenmedi
+names: []
+
+modality: thermal
+version: v1
+notes: "Termal veri seti - etiketleme bekliyor. UAV-Inspection ve Anomaly-Detection ham verileri mevcut."
