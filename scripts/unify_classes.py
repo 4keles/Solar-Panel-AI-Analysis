@@ -16,15 +16,15 @@ GLOBAL_CLASSES = {
     2: "dust_particle",
     3: "leaf",
     4: "snow",
-    5: "electrical_damage_hotspot",
-    6: "healthy",
-    7: "bird_feather"
+    5: "healthy",
+    6: "bird_feather"
 }
 
 # Mapping of potential variant names to global names
 NAME_NORMALIZATION = {
     "dust_partical": "dust_particle",
-    "electrical_damage": "electrical_damage_hotspot",
+    "electrical_damage": "physical_damage",
+    "electrical_damage_hotspot": "physical_damage",
 }
 
 def get_inverse_global():
@@ -103,8 +103,8 @@ def process_modality(modality="rgb", split_ratio=0.8):
         if (item / "classes.txt").exists():
             local_classes_mapping = parse_local_classes(item / "classes.txt")
         elif item.name == "mvp_v1" or item.name == "mvp_test_v1":
-            # Hardcoded mvp mapping
-            local_classes_mapping = {0:0, 1:1, 2:2, 3:3, 4:4, 5:5, 6:6}
+            # Hardcoded mvp mapping: 5 was electrical_damage, 6 was healthy
+            local_classes_mapping = {0:0, 1:1, 2:2, 3:3, 4:4, 5:0, 6:5}
         else:
             # Try to find classes.txt deeper
             deep_classes = list(item.rglob("classes.txt"))
