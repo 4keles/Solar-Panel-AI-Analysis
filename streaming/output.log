@@ -1,0 +1,46 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.12, pytest-9.0.3, pluggy-1.6.0 -- /home/kayra/git/solar_panel_od/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/kayra/git/solar_panel_od
+configfile: pyproject.toml
+plugins: anyio-4.12.1, requests-mock-1.12.1, Faker-40.5.1, mock-3.15.1
+collecting ... collected 5 items
+
+tests/unit/test_frame_processor.py::test_process_returns_original_frame_unchanged PASSED [ 20%]
+tests/unit/test_frame_processor.py::test_empty_frame_returns_no_detections PASSED [ 40%]
+tests/unit/test_frame_processor.py::test_detections_have_correct_fields FAILED [ 60%]
+tests/unit/test_frame_processor.py::test_inference_ms_positive PASSED    [ 80%]
+tests/unit/test_frame_processor.py::test_uninitialized_raises PASSED     [100%]
+
+=================================== FAILURES ===================================
+_____________________ test_detections_have_correct_fields ______________________
+
+mock_yolo_model = <MagicMock id='139719339886976'>
+dummy_frame = array([[[0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+        ...,
+        [0, 0, 0],
+        [0, 0, 0],
+        [0...   [0, 0, 0],
+        ...,
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]]], shape=(480, 640, 3), dtype=uint8)
+
+    def test_detections_have_correct_fields(mock_yolo_model, dummy_frame):
+        in_q = queue.Queue()
+        out_q = queue.Queue()
+        proc = FrameProcessor(mock_yolo_model, in_q, out_q)
+    
+        result = proc.process(dummy_frame)
+    
+>       assert len(result.detections) == 2
+E       assert 0 == 2
+E        +  where 0 = len([])
+E        +    where [] = ProcessResult(frame=array([[[0, 0, 0],\n        [0, 0, 0],\n        [0, 0, 0],\n        ...,\n        [0, 0, 0],\n        [0, 0, 0],\n        [0, 0, 0]],\n\n       [[0, 0, 0],\n        [0, 0, 0],\n        [0, 0, 0],\n        ...,\n        [0, 0, 0],\n        [0, 0, 0],\n        [0, 0, 0]],\n\n       [[0, 0, 0],\n        [0, 0, 0],\n        [0, 0, 0],\n        ...,\n        [0, 0, 0],\n        [0, 0, 0],\n        [0, 0, 0]],\n\n       ...,\n\n       [[0, 0, 0],\n        [0, 0, 0],\n        [0, 0, 0],\n        ...,\n        [0, 0, 0],\n        [0, 0, 0],\n        [0, 0, 0]],\n\n       [[0, 0, 0],\n        [0, 0, 0],\n        [0, 0, 0],\n        ...,\n        [0, 0, 0],\n        [0, 0, 0],\n        [0, 0, 0]],\n\n       [[0, 0, 0],\n        [0, 0, 0],\n        [0, 0, 0],\n        ...,\n        [0, 0, 0],\n        [0, 0, 0],\n        [0, 0, 0]]], shape=(480, 640, 3), dtype=uint8), detections=[], inference_ms=0.026098998205270618).detections
+
+tests/unit/test_frame_processor.py:59: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_frame_processor.py::test_detections_have_correct_fields
+========================= 1 failed, 4 passed in 1.97s ==========================

@@ -60,7 +60,7 @@ def augment_dataset(source: Path, output: Path, pipeline_path: Path, target_coun
     out_img.mkdir(parents=True, exist_ok=True)
     out_lbl.mkdir(parents=True, exist_ok=True)
 
-    images = sorted([p for p in img_dir.glob('*') if p.suffix.lower() in {'.jpg', '.jpeg', '.png'}])
+    images = sorted([p for p in img_dir.glob('*') if p.suffix.lower() in {'.jpg', '.jpeg', '.png'} and '_aug_' not in p.name])
     for idx, img_path in enumerate(images[:target_count]):
         img = cv2.imread(str(img_path))
         if img is None:

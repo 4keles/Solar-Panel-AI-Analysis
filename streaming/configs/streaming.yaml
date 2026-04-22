@@ -1,0 +1,26 @@
+model:
+  path: ""                    # Boş bırakılırsa ../models/latest/best.pt denenir
+  modality: "rgb"             # "rgb" veya "thermal"
+  conf: 0.25
+  iou: 0.45
+  device: "0"                 # "cpu" | "0" | "cuda:0"
+
+source:
+  type: "camera"              # "camera" | "video" | "rtsp"
+  camera_id: 0
+  video_path: ""
+  rtsp_url: ""
+
+recording:
+  enabled: false
+  output_dir: "output/recordings"
+  codec: "mp4v"
+  fps_override: null          # null ise kaynaktan alınır
+
+display:
+  show_window: true
+  window_title: "Solar Panel OD - Streaming"
+  scale: 1.0
+  show_fps: true
+  show_conf: true
+  show_class_label: true
