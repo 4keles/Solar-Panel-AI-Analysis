@@ -96,6 +96,19 @@ def main() -> None:
     )
     write_metadata(artifact_dir / 'metadata.json', metadata)
 
+    # Otomatik TensorRT (.engine) Export
+    best_pt_path = artifact_dir / 'best.pt'
+    if best_pt_path.exists():
+        logger.info('exporting_to_tensorrt', path=str(best_pt_path))
+        try:
+            export_model = YOLO(best_pt_path)
+            # Eğer eğitim CPU'da yapılmış olsa bile GPU varsa export için cihaz 0'ı (GPU) kullanmayı dene
+            export_device = train_cfg.device if str(train_cfg.device) != "cpu" else 0
+            export_model.export(format='engine', device=export_device, half=True, imgsz=train_cfg.imgsz)
+            logger.info('tensorrt_export_success', engine_path=str(best_pt_path.with_suffix('.engine')))
+        except Exception as e:
+            logger.warning('tensorrt_export_failed', error=str(e), note="GPU/CUDA kurulu olmayabilir.")
+
     logger.info('training_complete', run_dir=str(run_dir), version=version, model_dir=str(artifact_dir), report_dir=str(report_dir))
 
 
