@@ -1,0 +1,16 @@
+display:
+  window_title: "Solar Panel AI Detection - Live Streaming"
+  show_window: true
+
+source:
+  type: "camera"
+  camera_id: 0
+
+model:
+  path: "models/v1.0.3/best.onnx"
+  conf: 0.25
+  device: "0"
+
+recording:
+  enabled: false
+  output_dir: "output/recordings"
