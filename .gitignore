@@ -16,6 +16,8 @@ uv.lock
 # Veri Klasörleri
 raw_data/
 processed_data/
+data/
+
 *.zip
 *.pt
 *.tar

@@ -42,7 +42,7 @@ class Annotator:
             cv2.rectangle(annotated, (x1, y1), (c2, c3), color, -1)
             
             # Text
-            cv2.putText(annotated, label, (x1 + 2, y1 - 2), self.font, self.font_scale, self.text_color, 1, cv2.LINE_AA)
+            cv2.putText(annotated, label, (x1 + 2, y1 - 2), self.font, self.font_scale, (0, 0, 0), 1, cv2.LINE_AA)
             
         return annotated
 
