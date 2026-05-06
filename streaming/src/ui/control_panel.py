@@ -91,14 +91,16 @@ class ControlPanel:
         models_dir = Path(__file__).resolve().parent.parent.parent.parent / "models"
         self._available_models = list(models_dir.rglob("*.pt"))
         if self._available_models:
-            self.model_combo["values"] = [p.name for p in self._available_models]
+            # Show relative path from models/ to make versions visible (e.g. v1.0.3/best.pt)
+            self.model_combo["values"] = [str(p.relative_to(models_dir)) for p in self._available_models]
             self.model_combo.current(0)
             
             # Select target model if config has one
             config_mod = self.config.get("model", {}).get("path", "")
             if config_mod:
+                config_mod_name = Path(config_mod).name
                 for i, p in enumerate(self._available_models):
-                    if p.name == Path(config_mod).name:
+                    if p.name == config_mod_name:
                         self.model_combo.current(i)
                         break
 

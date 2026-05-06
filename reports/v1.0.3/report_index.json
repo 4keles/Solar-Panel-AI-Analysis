@@ -1,0 +1,13 @@
+{
+  "source_run_dir": "/home/kayra/git/solar_panel_od/runs/detect/val2",
+  "copied_files": [
+    "confusion_matrix.png",
+    "confusion_matrix_normalized.png",
+    "val_batch0_labels.jpg",
+    "val_batch0_pred.jpg",
+    "val_batch1_labels.jpg",
+    "val_batch1_pred.jpg",
+    "val_batch2_labels.jpg",
+    "val_batch2_pred.jpg"
+  ]
+}

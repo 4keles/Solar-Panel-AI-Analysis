@@ -17,5 +17,8 @@ shear: 0.0
 perspective: 0.0
 flipud: 0.0
 fliplr: 0.5
+# Focal Loss ve Sınıf Ağırlıkları (Class Imbalance Çözümü)
+fl_gamma: 1.5       # Dengesiz/az sınıflara algoritmanın zorunlu odaklanmasını sağlar
+cls: 1.0            # Sınıflandırma loss çarpanını artırarak objelerin ismini doğru bilmesine abanır
 mosaic: 1.0
-mixup: 0.0
+mixup: 0.1          # Sınıfları iç içe kaynaştırıp modelin ezberlemesini önler

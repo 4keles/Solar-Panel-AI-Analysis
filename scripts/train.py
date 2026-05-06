@@ -38,8 +38,11 @@ def build_train_kwargs(train_cfg: TrainConfig, data_cfg_path: Path, args: argpar
         kwargs['resume'] = args.resume
     if args.freeze is not None:
         kwargs['freeze'] = args.freeze
-    if args.focal_loss:
-        kwargs['fl_gamma'] = 1.5
+    
+    # Class imbalance handle 
+    kwargs['cls'] = 1.0     
+    kwargs['mixup'] = 0.1
+    
     return kwargs
 
 
