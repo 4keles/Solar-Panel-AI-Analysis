@@ -1,0 +1,16 @@
+# Yeni Model (Unified) gelistirme profili
+model: yolo11n.pt
+data: configs/dataset_unified.yaml
+imgsz: 640
+epochs: 50
+batch: 8
+workers: 4
+device: 0
+half: false
+cos_lr: true
+patience: 15
+project: runs/detect
+name: solar_unified_model
+
+# Hyperparameters applied internally via modifying train.py
+cache: false
