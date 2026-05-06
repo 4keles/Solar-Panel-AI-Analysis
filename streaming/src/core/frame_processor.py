@@ -91,12 +91,16 @@ class FrameProcessor:
 
         t_start = time.perf_counter()
         
+        # GPU varsa 640, CPU'da 320 ile çok daha hızlı çalışır
+        imgsz = 640 if self.device not in ("cpu",) else 320
+
         # prediction with raw frame
         results = self._model.predict(
             source=frame,
             conf=self.conf,
             iou=self.iou,
             device=self.device,
+            imgsz=imgsz,
             verbose=False
         )
         

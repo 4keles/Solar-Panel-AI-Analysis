@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<style>
+    @page { margin: 25mm 20mm; }
+    body { font-family: 'Times New Roman', Times, serif; line-height: 1.5; margin: 0; padding: 0; color: #000; font-size: 12pt; }
+    .cover-page { text-align: center; height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box; page-break-after: always; }
+    .logo { max-width: 250px; margin: 30px 0; }
+    .uni-title { font-size: 20pt; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+    .faculty-title { font-size: 16pt; margin-bottom: 30px; }
+    .course-title { font-size: 14pt; font-weight: bold; margin-bottom: 20px; }
+    .project-title { font-size: 22pt; font-weight: bold; text-transform: uppercase; margin-bottom: 50px; margin-top: 30px; color: #1a1a1a; line-height: 1.3;}
+    .info-container { width: 100%; display: flex; justify-content: space-between; margin-top: 60px; font-size: 14pt; text-align: left; }
+    .info-left, .info-right { width: 45%; }
+    
+    h1, h2, h3 { color: #000; }
+    h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 25px; font-size: 16pt; }
+    p { text-align: justify; margin-bottom: 15px; }
+    ul { margin-bottom: 15px; }
+    li { text-align: justify; margin-bottom: 5px; }
+    
+    .image-container { text-align: center; margin: 20px 0; page-break-inside: avoid; }
+    .image-container img { max-width: 80%; border: 1px solid #ccc; }
+    .caption { font-style: italic; font-size: 10pt; margin-top: 8px; }
+    .page-break { page-break-before: always; break-before: page; }
+</style>
+</head>
+<body>
+
+<div class="cover-page">
+    <div class="uni-title">MARMARA ÜNİVERSİTESİ</div>
+    <div class="faculty-title">Teknoloji Fakültesi</div>
+    
+    <img src="TeknolojiF.png" alt="Logo" class="logo">
+    
+    <div class="course-title">ELM4098.9 Bitirme Projesi</div>
+    <div class="project-title">GÜNEŞ PANELLERİNDE YAPAY ZEKA TABANLI HATA VE ANORMALLİK TESPİTİ<br><br><span style="font-size:18pt; font-weight:normal;">Bitirme Projesi Ara Raporu</span></div>
+    
+    <div class="info-container">
+        <div class="info-left">
+            <p><strong>Danışman Öğretim Üyesi:</strong><br>Prof. Dr. Şafak SAĞLAM</p>
+        </div>
+        <div class="info-right">
+            <p><strong>Hazırlayan Öğrenci:</strong><br>İbrahim Tarık ESER<br>170520037</p>
+        </div>
+    </div>
+</div>
+
+<div class="content-page">
+    <h2>ÖZET</h2>
+    <p>Güneş enerjisi santrallerinde (GES) verimliliği düşüren temel faktörlerin başında paneller üzerindeki fiziki hasarlar (kırıklar), çevresel kirlilikler (toz, kuş pisliği) ve elektriksel anormallikler (hotspot) gelmektedir. Bu bitirme projesi kapsamında, bahsedilen anormalliklerin otonom bir şekilde tespit edilebilmesi amacıyla Derin Öğrenme (Deep Learning) tabanlı bir nesne tespiti (object detection) sistemi geliştirilmektedir. Çalışmada YOLO (You Only Look Once) algoritmasının güncel versiyonlarından faydalanılarak bir model eğitilmiş ve gerçek zamanlı video akışları üzerinden analiz yapabilen asenkron bir kullanıcı arayüzü tasarlanmıştır. Bu ara raporda, projenin mevcut durumuna kadar yapılan literatür araştırmaları, veri ön işleme adımları, model eğitim süreçleri ve elde edilen ilk bulgular bilimsel araştırma tekniklerine uygun olarak sunulmuştur.</p>
+
+    <h2>1. GİRİŞ</h2>
+    <p>Yenilenebilir enerji kaynaklarının kullanımı küresel çapta hızla artarken, güneş panellerinin bakım ve işletme süreçlerinin optimizasyonu büyük bir önem kazanmıştır. Paneller üzerinde zamanla oluşan çevresel faktörler (kuş pislikleri, tozlanma vb.) ve donanımsal arızalar (mikro-çatlaklar, hotspotlar) enerji üretiminde ciddi verim kayıplarına yol açmaktadır. Geleneksel insan gücüne dayalı inceleme yöntemleri, büyük ölçekli santrallerde hem zaman alıcı hem de yüksek maliyetli olmaktadır. Bu projenin amacı, yapay zeka ve bilgisayarlı görü (computer vision) tekniklerini kullanarak güneş panellerindeki bu hataları hızlı, otonom ve yüksek doğrulukla tespit edecek uçtan uca (end-to-end) bir yazılım mimarisi geliştirmektir.</p>
+
+    <h2>2. PROJEYE BAŞLANGIÇ VE TEMEL KAVRAMLAR (Sistemin Basit İşleyişi)</h2>
+    <p>Projenin akademik detaylarına geçmeden önce, konuya aşina olmayan okuyucular için projenin başlangıç noktası ve sistemin temel işleyiş mantığı aşağıda özetlenmiştir.</p>
+    <ul>
+        <li><strong>Nereden Başladık?:</strong> Proje fikri, "Güneş panellerindeki gözle görülmesi zor olan veya insan gücüyle tek tek aranması haftalar süren ufak çatlakları ve kirlilikleri, kameradan alınan görüntülerle saniyeler içinde bulabilen bir sistem yapılabilir mi?" sorusuyla ortaya çıkmıştır. Hedef, insanın yerini alacak ve hata yapmayan sanal bir denetmen üretmek olarak belirlenmiştir.</li>
+        <li><strong>Nasıl Çalışıyor ve Neler Kullanıldı?:</strong>
+            <ul>
+                <li><strong>Python (Ana Motor):</strong> Projenin tüm parçalarını bir araya getiren ve sistemin çalışmasını sağlayan ana yazılım dilidir.</li>
+                <li><strong>Label-Studio (Etiketleme Atölyesi):</strong> Yapay zekanın hataları öğrenebilmesi için öncelikle bir insanın ona hataların yerini göstermesi gerekir. Bu projede toplanan tüm ham fotoğraflardaki hasarlar (kırıklar, kuş pislikleri vb.), Label-Studio programı kullanılarak insan eliyle tek tek çizilerek etiketlenmiş ve yapay zekanın anlayacağı formata getirilmiştir.</li>
+                <li><strong>YOLO Yapay Zeka (Akıllı Gözler):</strong> İnsan gözünün çok daha hızlısı olarak çalışan bir yapay zeka sistemidir. Bu sisteme yüzlerce hasarlı güneş paneli fotoğrafı gösterilerek yoğun bir eğitim verilmiştir.</li>
+                <li><strong>Albumentations (Sanal Eğitim Kampı):</strong> Yapay zekanın "zor şartlarda" da hatasız çalışmasını sağlamak için elimizdeki etiketli fotoğrafların yönünü, ışığını ve rengini değiştirerek bir fotoğraftan onlarca farklı zorlu senaryo üreten veri çoğaltma sistemidir.</li>
+                <li><strong>Tkinter ve OpenCV (Kontrol Paneli ve Çizim Kalemi):</strong> Kameralardan gelen görüntüleri analiz eden ve yapay zeka bir hata bulduğunda o hatanın etrafını renkli karelerle çizen sistemdir (OpenCV). Ayrıca teknik bilgisi olmayan birinin bile sadece "Sistemi Başlat" tuşuna basarak bu analizi yapabilmesi için tasarlanan görsel arayüzdür (Tkinter).</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>3. LİTERATÜR TARAMASI</h2>
+    <p>Güneş paneli hatalarının tespiti üzerine literatürde birçok çalışma bulunmaktadır. Geleneksel yöntemler genellikle termal kameralar (termografi) ve elektrolüminesans (EL) görüntüleme üzerine odaklanırken [1], son yıllarda İnsansız Hava Araçları (İHA) ile entegre edilmiş kameralar üzerinden derin öğrenme algoritmalarının kullanımı yaygınlaşmıştır.</p>
+    <p>Örneğin, YOLO ve türevi Evrişimli Sinir Ağı (CNN) mimarilerinin fotovoltaik paneller üzerindeki sıcak noktaları (hotspot) ve fiziksel hasarları tespit etmede yüksek doğruluk oranlarına ulaştığı kanıtlanmıştır [2]. Sınırlı veri setleri ile model eğitimindeki zorlukları aşmak için literatürde veri artırma (data augmentation) yöntemleri sıklıkla kullanılmaktadır [3]. Geometrik dönüşümler ve gürültü ekleme gibi veri artırma yöntemlerinin nesne tespit modellerinin başarımını (mAP - mean Average Precision) önemli ölçüde artırdığı önceki çalışmalarda gösterilmiştir [4]. Bu proje, mevcut literatürdeki bu derin öğrenme ve veri hazırlama yöntemlerini temel alarak; hem modelin dayanıklılığının (robustness) artırılmasını hem de elde edilen modelin eşzamanlı (real-time) çalışan çok iş parçacıklı (multi-threaded) yerel bir uygulamaya entegre edilmesini hedeflemektedir.</p>
+
+    <h2>4. MATERYAL VE METOT</h2>
+    <p>Projenin gerçekleştirilmesinde kullanılan donanımsal ve yazılımsal altyapılar ile uygulanan metodolojik adımlar aşağıda detaylandırılmıştır.</p>
+    <p><strong>4.1. Veri Seti ve Veri Artırımı (Data Augmentation):</strong> Yapay zeka modelinin genellenebilirliğini artırmak için çeşitli kaynaklardan elde edilen panel görüntüleri kullanılmıştır. Eğitim verisi eksikliğini gidermek ve modelin farklı ortam şartlarındaki performansını yükseltmek amacıyla Albumentations kütüphanesi [3] kullanılarak sentetik veri artırımı yapılmıştır. Proje dizinindeki scripts/augment.py kodları üzerinden fotoğraflara rastgele döndürme, parlaklık değişimi ve gürültü ekleme işlemleri uygulanmıştır.</p>
+    <p><strong>4.2. Yapay Zeka Modeli ve Eğitim Süreci:</strong> Nesne tespiti aşamasında, gerçek zamanlı tespit hızına ve yüksek doğruluk oranlarına sahip olması sebebiyle Ultralytics tabanlı YOLO11 mimarisi seçilmiştir [2]. Model, proje kapsamında tanımlanan anormallik etiketleri üzerinden eğitilmiştir. Eğitim süreci boyunca aşırı öğrenmeyi engellemek adına veriler; eğitim ve doğrulama setleri olarak yapılandırılmıştır.</p>
+    <p><strong>4.3. Sistem Mimarisi ve Arayüz (GUI):</strong> Eğitilen modelin kullanılabileceği bir platform sunmak için Python dilinde Tkinter ve OpenCV kütüphaneleri [5] yardımıyla bir grafik kullanıcı arayüzü tasarlanmıştır. Sistem, video akışını LIFO yapısında bir kuyruk mimarisiyle işleyerek analizleri asenkron biçimde (multi-threading) ekrana yansıtmakta ve video kaydı alabilmektedir.</p>
+
+    <h2>5. BULGULAR VE MODEL PERFORMANS TESTİ</h2>
+    <p>Bugüne kadar yürütülen çalışmalar neticesinde, projenin Faz 1 (Eğitim Altyapısı) ve Faz 2 (Uygulama Arayüzü) kısımları kodlanmış ve temel mimari testleri tamamlanmıştır. Yapay zeka modelinin son versiyonu (v1.0.3) doğrulama seti üzerinde test edilmiş ve sayısal metrikler çıkarılmıştır.</p>
+    <p><strong>Model Test Sonuçları Değerlendirmesi:</strong> Test sonucunda elde edilen verilere göre modelin <strong>mAP50 değeri %70.5</strong>, <strong>Precision (Kesinlik) değeri %72.2</strong>, <strong>Recall (Duyarlılık) değeri %67.0</strong> ve genel başarı ortalaması olan <strong>F1-Score değeri %69.5</strong> olarak ölçülmüştür.</p>
+    <ul>
+        <li><strong>İyi Taraflar:</strong> Modelin %72.2'lik bir kesinlik (Precision) oranına sahip olması, modelin "hata var" dediği durumlarda büyük ölçüde haklı olduğunu göstermektedir. Yanlış alarm üretme ihtimali düşük seviyededir.</li>
+        <li><strong>Eksik Taraflar:</strong> Duyarlılık (Recall) değerinin %67.0 seviyelerinde kalması, modelin bazı gözle görülmesi zor hataları gözden kaçırabildiğine işaret etmektedir. Ayrıca mAP50-95 metriklerinin istenen yüksekliğe erişmemesi, nesneleri çevreleyen tespit kutularının (bounding box) tam olarak hatanın sınırlarına oturamayabildiğini göstermektedir.</li>
+    </ul>
+
+    <p>Aşağıda, modelin doğrulama seti üzerindeki tahminleme başarısını gösteren bazı görsel sonuçlar sunulmuştur.</p>
+
+    <div class="image-container">
+        <img src="../reports/v1.0.3/val_batch0_pred.jpg" alt="Şekil 1">
+        <div class="caption">Şekil 1: Modelin doğrulama veri seti üzerindeki tespit örneği-1</div>
+    </div>
+    <div class="image-container">
+        <img src="../reports/v1.0.3/val_batch1_pred.jpg" alt="Şekil 2">
+        <div class="caption">Şekil 2: Modelin doğrulama veri seti üzerindeki tespit örneği-2</div>
+    </div>
+    <div class="image-container">
+        <img src="../reports/v1.0.3/val_batch2_pred.jpg" alt="Şekil 3">
+        <div class="caption">Şekil 3: Modelin doğrulama veri seti üzerindeki tespit örneği-3</div>
+    </div>
+
+    <h2>6. SONUÇ VE SONRAKİ ÇALIŞMA ADIMLARI</h2>
+    <p>Şu ana kadar yapılan çalışmalarla projenin yapay zeka ve arayüz altyapısı (pipeline) tamamen oluşturulmuş, test metriklerinden elde edilen ilk veriler modelin öğrenme kapasitesinin tatmin edici düzeyde olduğunu doğrulamıştır. Test sonuçlarından alınan geri bildirimlere göre planlanan sonraki çalışma adımları şunlardır:</p>
+    <ul>
+        <li><strong>Adım 1: Sınıf Dengesizliğinin ve Recall Değerinin İyileştirilmesi:</strong> Modelin tespitleri kaçırma problemini çözmek amacıyla, veri setindeki eksik sınıflar tespit edilerek bu sınıflara yönelik Label-Studio ile yeni manuel etiketlemeler yapılacak ve veri artırımı stratejileri yoğunlaştırılacaktır.</li>
+        <li><strong>Adım 2: Hiperparametre Optimizasyonu:</strong> Tespit kutularının anormalliklerin sınırlarına daha kusursuz oturmasını sağlamak amacıyla, model eğitim parametreleri üzerinde kapsamlı iyileştirmeler yapılacaktır.</li>
+        <li><strong>Adım 3: Canlı Saha/Performans Testleri:</strong> Geliştirilen arayüz (GUI), donanımsal sınırları zorlamak adına farklı çözünürlüklerdeki video kaynakları kullanılarak performans testine tabi tutulacaktır.</li>
+        <li><strong>Adım 4: Performans Metriklerinin Çıkarılması ve Final Raporlaması:</strong> Tüm geliştirmelerin ardından modelin nihai performans metrikleri yorumlanarak projenin kapsamlı final raporu hazırlanacaktır.</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+<div class="content-page">
+    <h2>KAYNAKÇA</h2>
+    <p>[1] Buerhop-Meyo, C., vd. (2014). "Reliability of IR-imaging of PV-plants under operating conditions". <em>Solar Energy Materials and Solar Cells</em>, 122, 126-133.</p>
+    <p>[2] Jocher, G., vd. (2023). "Ultralytics YOLO". <em>GitHub Repository</em>. https://github.com/ultralytics/ultralytics</p>
+    <p>[3] Buslaev, A., vd. (2020). "Albumentations: Fast and Flexible Image Augmentations". <em>Information</em>, 11(2), 125.</p>
+    <p>[4] Shorten, C., & Khoshgoftaar, T. M. (2019). "A survey on Image Data Augmentation for Deep Learning". <em>Journal of Big Data</em>, 6(1), 1-48.</p>
+    <p>[5] Bradski, G. (2000). "The OpenCV Library". <em>Dr. Dobb's Journal of Software Tools</em>.</p>
+    <p>[6] Roboflow Universe. "Solar Panel Detection Dataset". <em>Roboflow Veri Seti</em>. https://universe.roboflow.com/solar-panel-detection-bgiuk/solar-panel-detection-a5bec/dataset/</p>
+    <p>[7] Houhou34. "PV-Multi-Defect Dataset". <em>GitHub Repository</em>. https://github.com/houhou34/PV-Multi-Defect/blob/main</p>
+    <p>[8] Eser, İ. T. "Güneş Panelleri Özgün Görsel Veri Seti". <em>Bireysel Saha Çalışmaları ve Veri Toplama</em>.</p>
+</div>
+
+</body>
+</html>

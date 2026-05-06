@@ -7,6 +7,16 @@ import threading
 import sys
 from pathlib import Path
 
+try:
+    import torch
+    _CUDA_AVAILABLE = torch.cuda.is_available()
+    _DEVICE = "cuda:0" if _CUDA_AVAILABLE else "cpu"
+    _DEVICE_LABEL = f"GPU: {torch.cuda.get_device_name(0)}" if _CUDA_AVAILABLE else "CPU (CUDA yok)"
+except Exception:
+    _CUDA_AVAILABLE = False
+    _DEVICE = "cpu"
+    _DEVICE_LABEL = "CPU"
+
 # Fix sys import to use logger properly
 _scripts_dir = Path(__file__).resolve().parent.parent.parent.parent / "scripts"
 if str(_scripts_dir) not in sys.path:
@@ -80,6 +90,11 @@ class ControlPanel:
         
         self.btn_rec = ttk.Button(control_frame, text="⏺ Record", command=self.toggle_record, state=tk.DISABLED)
         self.btn_rec.grid(row=0, column=7, padx=5)
+
+        # Device label
+        device_color = "#00cc44" if _CUDA_AVAILABLE else "#ff8800"
+        self.device_label = tk.Label(control_frame, text=f"⚡ {_DEVICE_LABEL}", fg=device_color, font=("Helvetica", 9, "bold"))
+        self.device_label.grid(row=0, column=8, padx=10)
         
         # Video Canvas
         self.canvas_frame = ttk.Frame(self.root)
@@ -89,7 +104,10 @@ class ControlPanel:
 
     def _populate_models(self):
         models_dir = Path(__file__).resolve().parent.parent.parent.parent / "models"
-        self._available_models = list(models_dir.rglob("*.pt"))
+        pt_models = list(models_dir.rglob("*.pt"))
+        onnx_models = list(models_dir.rglob("*.onnx"))
+        engine_models = list(models_dir.rglob("*.engine"))
+        self._available_models = pt_models + onnx_models + engine_models
         if self._available_models:
             # Show relative path from models/ to make versions visible (e.g. v1.0.3/best.pt)
             self.model_combo["values"] = [str(p.relative_to(models_dir)) for p in self._available_models]
@@ -169,12 +187,16 @@ class ControlPanel:
         colors = generate_class_colors(class_names)
         self._annotator = Annotator(class_colors=colors, conf_threshold=self.conf_var.get())
         
+        # GPU varsa cuda:0, yoksa cpu — config'e bakmadan otomatik seç
+        device = _DEVICE
+        logger.info("inference_device", device=device, cuda=_CUDA_AVAILABLE)
+
         self._processor = FrameProcessor(
             model=model,
             input_queue=self._source._queue,
             output_queue=self.q_out,
             conf=float(self.conf_var.get()),
-            device=self.config.get("model", {}).get("device", "cpu")
+            device=device
         )
         self._processor.start()
         
@@ -221,48 +243,59 @@ class ControlPanel:
         logger.info("pipeline_stopped")
 
     def _schedule_update(self):
-        if self.is_running and self._annotator:
+        if self.is_running and self._annotator and self._source:
             try:
-                # LIFO queue processing:
-                # get the most recent frame, drop older ones in the buffer
+                # Try to get the latest processed result (with detections)
                 result = None
                 while not self.q_out.empty():
                     result = self.q_out.get_nowait()
-                
-                if result is not None:
-                    # Draw bounding boxes
+
+                if result is not None and result.frame is not None and result.frame.size > 0:
+                    # Annotate with bounding boxes
                     annotated = self._annotator.draw(result.frame, result)
-                    
                     self._fps_counter.tick()
-                    
-                    # Draw HUD
                     annotated = self._annotator.draw_hud(
                         annotated,
                         fps=self._fps_counter.get_fps(),
                         source_label=str(self.source_var.get()),
                         recording=self._recorder.is_recording() if self._recorder else False
                     )
-
-                    # Write to recorder
                     if self._recorder and self._recorder.is_recording():
                         self._recorder.write(annotated)
-                    
-                    # Convert BGR to RGB for tkinter
-                    rgb = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
-                    img = Image.fromarray(rgb)
-                    
-                    # Store image ref to prevent garbage collection
-                    self._current_photo = ImageTk.PhotoImage(image=img)
-                    
-                    # Resize canvas to match explicitly
-                    self.canvas.config(width=img.width, height=img.height)
-                    self.canvas.create_image(0, 0, image=self._current_photo, anchor=tk.NW)
-                    
-            except queue.Empty:
+                    self._render_frame(annotated)
+
+                else:
+                    # q_out boş — ham frame'i direkt source'dan çek ve göster (siyah ekran olmasın)
+                    try:
+                        raw_ret, raw_frame = self._source._queue.get_nowait()
+                        if raw_ret and raw_frame is not None and raw_frame.size > 0:
+                            self._fps_counter.tick()
+                            hud_frame = self._annotator.draw_hud(
+                                raw_frame,
+                                fps=self._fps_counter.get_fps(),
+                                source_label=str(self.source_var.get()),
+                                recording=self._recorder.is_recording() if self._recorder else False
+                            )
+                            self._render_frame(hud_frame)
+                    except queue.Empty:
+                        pass
+
+            except Exception:
                 pass
-            
+
         # Loop every 15 ms
         self.root.after(15, self._schedule_update)
+
+    def _render_frame(self, frame):
+        """BGR numpy frame'i Tkinter canvas'a çizer."""
+        try:
+            rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            img = Image.fromarray(rgb)
+            self._current_photo = ImageTk.PhotoImage(image=img)
+            self.canvas.config(width=img.width, height=img.height)
+            self.canvas.create_image(0, 0, image=self._current_photo, anchor=tk.NW)
+        except Exception:
+            pass
 
     def on_close(self):
         self._stop_pipeline()
