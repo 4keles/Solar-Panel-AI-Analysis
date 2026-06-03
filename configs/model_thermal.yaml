@@ -1,22 +1,33 @@
-# Thermal YOLO Model Configuration
-model: yolo11n.pt           # Base model
-data: data/processed_data/thermal_master/data.yaml
-epochs: 100
+# configs/model_thermal.yaml
+# Thermal YOLOv11 - 5 sınıf: ByPassed, Diode, HotSpot, StringOpenCircuit, StringReversedPolarity
+model: yolo11s.pt           # Küçük ama daha capable model (n → s, 7339 görüntü yeterli)
+data: data/processed_data/thermal_anomaly_v1/data.yaml
+epochs: 150
 imgsz: 640
-batch: 16
-workers: 8
+batch: 8
+workers: 4
+device: 0                   # GPU (CUDA)
+half: false                 # FP16 kapalı (GPU bfloat16 desteklemiyor - CUBLAS hata)
+cos_lr: true                # Cosine LR scheduler
+patience: 30
+project: runs/thermal
+name: solar_thermal_model_5cls
+cache: false
 
-# Hyperparameters (Augmentations could be tweaked for Thermal)
-# e.g., HSV changes might not be as effective on thermal if it's pseudocolor
+# Thermal'a özel augmentasyon (HSV anlamsız, geometrik dönüşümler önemli)
 hsv_h: 0.0
 hsv_s: 0.0
-hsv_v: 0.0
-degrees: 0.0
+hsv_v: 0.15              # Az da olsa parlaklık varyasyonu (pseudocolor termal için)
+degrees: 5.0
 translate: 0.1
 scale: 0.5
 shear: 0.0
 perspective: 0.0
-flipud: 0.0
+flipud: 0.5
 fliplr: 0.5
 mosaic: 1.0
-mixup: 0.0
+mixup: 0.05
+
+# Class Imbalance (hotspot >> diode >> StringOpenCircuit)
+# fl_gamma: Ultralytics doğrudan argüman olarak desteklemiyor (dahili DF kullanıyor)
+cls: 1.5                   # Classification loss weight - az sınıflara baskı

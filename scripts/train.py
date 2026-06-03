@@ -38,11 +38,18 @@ def build_train_kwargs(train_cfg: TrainConfig, data_cfg_path: Path, args: argpar
         kwargs['resume'] = args.resume
     if args.freeze is not None:
         kwargs['freeze'] = args.freeze
-    
-    # Class imbalance handle 
-    kwargs['cls'] = 1.0     
-    kwargs['mixup'] = 0.1
-    
+
+    # Augmentation / loss hyperparams: config'deki değerleri YOLO'ya ilet (None olanları atla)
+    HYPER_FIELDS = [
+        'hsv_h', 'hsv_s', 'hsv_v', 'degrees', 'translate', 'scale',
+        'shear', 'perspective', 'flipud', 'fliplr', 'mosaic', 'mixup',
+        'cls',
+    ]
+    for field in HYPER_FIELDS:
+        val = getattr(train_cfg, field, None)
+        if val is not None:
+            kwargs[field] = val
+
     return kwargs
 
 

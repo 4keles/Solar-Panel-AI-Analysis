@@ -1,12 +1,23 @@
 # configs/dataset_thermal.yaml
-path: data/processed_data/thermal/v1
+path: data/processed_data/thermal_anomaly_v1
 train: train/images
 val:   valid/images
 test:  test/images
 
-nc: 0        # henuz etiketlenmedi
-names: []
+nc: 5
+names:
+  0: ByPassed
+  1: Diode
+  2: HotSpot
+  3: StringOpenCircuit
+  4: StringReversedPolarity
 
 modality: thermal
 version: v1
-notes: "Termal veri seti - etiketleme bekliyor. UAV-Inspection ve Anomaly-Detection ham verileri mevcut."
+notes: >
+  Anomaly-Detection (Roboflow, 7339 görüntü) 8 sınıftan 5 sınıfa indirgendi.
+  MultiByPassed + SingleByPassed → ByPassed (0)
+  MultiDiode + SingleDiode → Diode (1)
+  MultiHotSpot + SingleHotSpot → HotSpot (2)
+  StringOpenCircuit → StringOpenCircuit (3)
+  StringReversedPolarity → StringReversedPolarity (4)

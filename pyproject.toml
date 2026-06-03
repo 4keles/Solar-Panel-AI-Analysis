@@ -10,18 +10,31 @@ dependencies = [
     "opencv-python>=4.13.0.92",
     "reportlab>=4.4.10",
     "structlog>=25.5.0",
-    "ultralytics>=8.4.19",
+    "ultralytics>=8.3.0",
+    "onnxruntime-gpu>=1.20",
+    "onnxslim>=0.1.34",
+    "onnx>=1.12.0,<2.0.0",
     "torch",
     "torchvision",
-    "tensorrt>=10.16.1.11",
-    "onnxruntime-gpu>=1.24.3",
+    "pyqt6>=6.11.0",
+    "tensorrt-cu12>=10.0",
+    "tensorrt-cu12-bindings>=10.0",
+    "tensorrt-cu12-libs>=10.0",
 ]
 
 [tool.uv.sources]
 torch = { index = "pytorch-cu124" }
 torchvision = { index = "pytorch-cu124" }
+tensorrt-cu12 = { index = "nvidia" }
+tensorrt-cu12-bindings = { index = "nvidia" }
+tensorrt-cu12-libs = { index = "nvidia" }
 
 [[tool.uv.index]]
 name = "pytorch-cu124"
 url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[[tool.uv.index]]
+name = "nvidia"
+url = "https://pypi.nvidia.com"
 explicit = true

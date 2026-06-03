@@ -1,0 +1,38 @@
+transforms:
+# Simülasyon 1: Titreşim ve Hareket (Rüzgar vb. etkiler)
+- MotionBlur:
+    blur_limit: [3, 7]
+    p: 0.3
+- GaussianBlur:
+    blur_limit: [3, 5]
+    p: 0.2
+
+# Simülasyon 2: İrtifa Değişimi (Daha uzaktan veya farklı açıdan çekim)
+- RandomScale:
+    scale_limit: [-0.6, 0.1] # -0.6 yani %60'a kadar küçültme (Yüksek irtifa drone simülasyonu)
+    p: 0.6
+- ShiftScaleRotate:
+    shift_limit: 0.1
+    scale_limit: 0.0
+    rotate_limit: 15
+    p: 0.5
+
+# Simülasyon 3: Sensör Gürültüsü (Yüksek ISO karanlık/karıncalanma)
+- GaussNoise:
+    std_range: [0.05, 0.15]
+    p: 0.4
+- ISONoise:
+    color_shift: 0.05
+    intensity: [0.1, 0.5]
+    p: 0.3
+
+# Simülasyon 4: Işık Değişimleri (Bulut geçişi, parlama vs.)
+- RandomBrightnessContrast:
+    brightness_limit: [-0.2, 0.2]
+    contrast_limit: [-0.2, 0.2]
+    p: 0.5
+- HueSaturationValue:
+    hue_shift_limit: 10
+    sat_shift_limit: 20
+    val_shift_limit: 20
+    p: 0.3

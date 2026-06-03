@@ -47,6 +47,18 @@ Eğitimi tamamlanmış modelin test setlerindeki kalitesini doğrulamak adına:
 yolo val model=models/v1.0.2/best.pt data=data/processed_data/rgb_master/data.yaml split=val
 ```
 
+### 1d. TensorRT (.engine) Formatına Çevirme (Export)
+Canlı akışlarda (streaming) donanımdan maksimum FPS ve performans almak için, eğitilen `.pt` formatındaki modelleri TensorRT donanımsal optimizasyon formatı olan `.engine`'e çevirebilirsiniz. Bunun için özel yazılmış betiği kullanabilirsiniz:
+
+```bash
+# İlk önce TensorRT ve ONNX gereksinimlerini kurun (Boyutları büyüktür, indirme çubuğunu görmek için extra-index-url eklenmiştir)
+uv pip install tensorrt-cu12 onnxruntime-gpu --extra-index-url https://pypi.nvidia.com
+
+# Sonrasında modeli .engine formatına çevirin
+uv run scripts/export_engine.py --model models/v1.0.4/best.pt --imgsz 640
+```
+*(Başarılı olduğunda, modelinizin bulunduğu klasöre aynı isimde bir `.engine` dosyası eklenecektir.)*
+
 ---
 
 ## 📹 2. Canlı Akış / Uygulama (Phase 2 - Streaming)
