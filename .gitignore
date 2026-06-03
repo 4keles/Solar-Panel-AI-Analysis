@@ -21,7 +21,15 @@ data/
 
 *.zip
 *.pt
+*.onnx
+*.engine
 *.tar
+
+# Çıktılar, Testler ve Loglar
+runs/
+reports/
+output/
+*.log
 # VS Code & OS
 .vscode/
 .DS_Store
