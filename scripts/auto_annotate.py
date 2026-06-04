@@ -6,7 +6,7 @@ from pathlib import Path
 
 from ultralytics import YOLO
 
-from utils.logger import get_logger
+from scripts.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -52,6 +52,17 @@ def auto_annotate(source_dir: Path, model_path: Path, conf_threshold: float) -> 
         if boxes_written >= 0: # count all processed images
             annotated_count += 1
             
+    # Generate classes.txt for Label Studio
+    classes_txt = source_dir / "classes.txt"
+    with open(classes_txt, "w", encoding="utf-8") as f:
+        # model.names is a dictionary like {0: 'class1', 1: 'class2'}
+        # we need to ensure they are written in order from 0 to max_id
+        max_id = max(model.names.keys()) if model.names else -1
+        for i in range(max_id + 1):
+            class_name = model.names.get(i, f"class_{i}")
+            f.write(f"{class_name}\n")
+    logger.info("generated_classes_txt", path=str(classes_txt))
+    
     logger.info("auto_annotation_complete", annotated=annotated_count, total=len(images))
 
 

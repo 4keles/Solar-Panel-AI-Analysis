@@ -7,7 +7,7 @@ import shutil
 import time
 from pathlib import Path
 
-from utils.logger import get_logger
+from scripts.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -18,11 +18,15 @@ def merge_dataset(source_dir: Path, target_base: Path, split_ratio: float = 0.8)
         return
 
     # Find all images that have a corresponding .txt file
-    images = list(source_dir.glob("*.jpg")) + list(source_dir.glob("*.png")) + list(source_dir.glob("*.jpeg"))
+    # Support both flat structure (images and txts in source_dir) and nested (source_dir/images and source_dir/labels)
+    search_dir = source_dir / "images" if (source_dir / "images").exists() else source_dir
+    lbl_dir = source_dir / "labels" if (source_dir / "labels").exists() else source_dir
+
+    images = list(search_dir.glob("*.jpg")) + list(search_dir.glob("*.png")) + list(search_dir.glob("*.jpeg"))
     valid_pairs = []
     
     for img_path in images:
-        txt_path = img_path.with_suffix(".txt")
+        txt_path = lbl_dir / img_path.with_suffix(".txt").name
         if txt_path.exists():
             valid_pairs.append((img_path, txt_path))
             
