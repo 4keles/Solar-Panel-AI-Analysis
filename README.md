@@ -93,3 +93,13 @@ Sistemdeki `models/` dizini haricindeki ham veriler (`data/`) ve ağır `.pt`/`.
 *Not: Eğer bilgisayarınızdaki repoda eğitimlerden kalma devasa `train_thermal.log`, `yolo11n.pt` veya `models.zip` gibi dosyalar bulunuyorsa, projeyi derlemeden önce bu dosyaları yerel dizinden kaldırarak kök dizini temiz tutabilirsiniz.*
 
 > **Solar Panel AI Analysis takımı tarafından ❤️ ile endüstri standardı kodlama prensiplerine bağlı kalınarak geliştirilmiştir.**
+
+---
+
+## 🔮 Future Works & To-Do (MLOps)
+
+Sistemin V2.0 (Enterprise) sürümü için planlanan mimari güncellemeler:
+- [ ] **Konteynerizasyon:** Bağımlılıkların (CUDA, TensorRT) her sistemde aynı çalışması için `NVIDIA Container Toolkit` destekli Docker İmajı oluşturulması.
+- [ ] **Veri Versiyonlama:** Eğitim verilerindeki değişimlerin Git yerine **DVC (Data Version Control)** ile bulut depoları üzerinden versiyonlanması.
+- [ ] **CI/CD Pipeline:** Kod kalitesini korumak için GitHub Actions ile `push` ve `pull_request` tetiklemelerinde otomatik test koşan otomasyon süreçleri.
+- [ ] **Vision-Only Mapping (Optical Flow):** Sensörsüz drone kameralarından gelen görüntüleri uç uca ekleyip (stitching) güneş paneli matrisini çıkaracak görsel haritalama algoritması entegrasyonu.
