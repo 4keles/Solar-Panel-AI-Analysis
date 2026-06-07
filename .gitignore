@@ -34,6 +34,7 @@ output/
 .vscode/
 .cursor/
 .cursorrules
+.claude/
 .DS_Store
 _private_notes/
 docs/bitirme_tezi/
