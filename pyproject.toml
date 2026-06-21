@@ -1,12 +1,18 @@
 [project]
-name = "Solar-Panel-AI-Analysis"
-version = "0.1.0"
-description = "Multi-Modal (RGB & Thermal) Solar Panel Object Detection System YOLO-based object detection pipeline for identifying and classifying specific defects in solar panels using both RGB and thermal imagery. Includes preprocessing, custom labeling workflows, and Dockerized deployment"
+name = "solar-panel-od"
+version = "1.2.1"
+description = "YOLO11-based multi-modal (RGB + thermal) solar panel defect detection — 6-class anomaly classification"
 readme = "README.md"
 requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "4keles", email = "vibemetriconline@gmail.com" }]
+
+[project.urls]
+Repository = "https://github.com/4keles/Solar-Panel-AI-Analysis"
+"Model Hub" = "https://huggingface.co/4keles/solar-panel-od"
+
 dependencies = [
     "albumentations>=2.0.8",
-    "label-studio>=1.22.0",
     "opencv-python>=4.13.0.92",
     "reportlab>=4.4.10",
     "structlog>=25.5.0",
@@ -20,6 +26,11 @@ dependencies = [
     "tensorrt-cu12>=10.0",
     "tensorrt-cu12-bindings>=10.0",
     "tensorrt-cu12-libs>=10.0",
+]
+
+[dependency-groups]
+dev = [
+    "label-studio>=1.22.0",
 ]
 
 [tool.uv.sources]
