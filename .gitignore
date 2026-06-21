@@ -38,3 +38,12 @@ output/
 .DS_Store
 _private_notes/
 docs/bitirme_tezi/
+
+# Private / sunum artıkları
+ibrahim sunum/
+SESSION_SUMMARY.md
+proje_review/
+solar_unified_project_v1.0.3/
+shorten_script.py
+streaming/output/recordings/*.mp4
+*.mp4
