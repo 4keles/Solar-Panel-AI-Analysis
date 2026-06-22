@@ -1,0 +1,46 @@
+# v1.0.5 — RGB, unifiedV2_dataset (temiz etiketler, doğru class mapping)
+# Komut:
+#   cd /home/kayra/git/solar_panel_od
+#   .venv/bin/python scripts/train.py \
+#     --config configs/train_v1.0.5_rgb.yaml \
+#     --data-config data/processed_data/solar/unifiedV2_dataset/data.yaml \
+#     --version-bump minor
+
+model: yolo11s.pt           # nano → small: en büyük tek kazanım
+data: configs/dataset_unifiedV2.yaml
+imgsz: 640
+epochs: 200
+batch: 8                    # OOM alırsan 4'e çek
+workers: 4
+device: 0
+half: false
+cos_lr: true
+patience: 50
+project: runs
+name: solar_v1.0.5_rgb
+cache: false
+
+# ── Augmentation ─────────────────────────────────────────────────────────────
+# NEW dataset augmentsiz — eski dataset _aug_N ile %41 şişirilmişti.
+# Burada YOLO'nun online augmentation'ı o farkı kapatacak.
+hsv_h: 0.015
+hsv_s: 0.7
+hsv_v: 0.4
+degrees: 12.0
+translate: 0.1
+scale: 0.6
+shear: 2.0
+perspective: 0.0005
+flipud: 0.4               # Eski config'de 0.0 idi — panel görüntüsü için geçerli
+fliplr: 0.5
+mosaic: 1.0
+mixup: 0.15
+copy_paste: 0.3           # Az örnekli class'lar için (bird_feather, bird_drop)
+erasing: 0.4
+auto_augment: randaugment
+
+# ── Loss ─────────────────────────────────────────────────────────────────────
+cls: 1.5                  # Imbalanced class'lara daha fazla ceza (default: 0.5)
+label_smoothing: 0.1
+warmup_epochs: 5.0
+weight_decay: 0.0005

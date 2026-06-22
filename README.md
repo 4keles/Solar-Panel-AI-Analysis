@@ -11,7 +11,13 @@
 
 ## Demo
 
-> Screenshot / GIF not yet added. To generate: run `python main.py`, open a solar panel video in the dashboard, and capture a frame. PR welcome.
+![Live Dashboard Demo](docs/demo.gif)
+
+*Live stream detection with dynamic inference and FPS controls.*
+
+![Screenshot](docs/screenshot.png)
+
+*Dashboard user interface and thermal mode.*
 
 ---
 
@@ -77,7 +83,7 @@ cp .env.example .env
 ### 1 — Download the model
 
 ```bash
-python scripts/download_model.py --version v1.2.1 --format onnx
+uv run python scripts/download_model.py --version v1.2.1 --format onnx
 # Downloads best.onnx (37.9 MB) into models/v1.2.1/
 ```
 
@@ -86,7 +92,7 @@ All model versions are hosted on [HuggingFace Hub](https://huggingface.co/4keles
 ### 2 — Launch the dashboard
 
 ```bash
-python main.py
+uv run python streaming/main.py
 ```
 
 Select a source (webcam, MP4, or RTSP URL) and model version from the sidebar. Switch to Thermal mode for infrared input.
@@ -104,7 +110,7 @@ results[0].show()
 ### 4 — Export to TensorRT
 
 ```bash
-python scripts/export_engine.py --model models/v1.2.1/best.pt --imgsz 640
+uv run python scripts/export_engine.py --model models/v1.2.1/best.pt --imgsz 640
 # Outputs models/v1.2.1/best.engine (CUDA 12.4 specific)
 ```
 
@@ -137,7 +143,7 @@ All versions with model cards: [huggingface.co/4keles/solar-panel-od](https://hu
 label-studio start
 
 # Run the auto-annotation pipeline on raw drone footage
-python scripts/active_learning_pipeline.py \
+uv run python scripts/active_learning_pipeline.py \
   --image-dir data/raw_data/unlabeled \
   --model models/v1.2.1/best.pt
 ```
@@ -145,13 +151,13 @@ python scripts/active_learning_pipeline.py \
 ### Training
 
 ```bash
-python scripts/train.py --config scripts/schemas/train_config.yaml
+uv run python scripts/train.py --config scripts/schemas/train_config.yaml
 ```
 
 ### Data augmentation
 
 ```bash
-python scripts/augment.py \
+uv run python scripts/augment.py \
   --source data/processed_data/rgb_master/train \
   --target-count 5000
 ```

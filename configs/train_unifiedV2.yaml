@@ -1,0 +1,39 @@
+# UnifiedV2 Dataset — İkinci tur eğitim config
+# Komut: python scripts/train.py --config configs/train_unifiedV2.yaml --data-config data/processed_data/solar/unifiedV2_dataset/data.yaml --version-bump minor
+
+model: yolo11s.pt          # nano → small: en büyük tek adım kazanım (~3-5 mAP)
+data: data/processed_data/solar/unifiedV2_dataset/data.yaml
+imgsz: 640                 # GPU izin verirse 1280 yap (küçük nesnelerde +2-4 mAP)
+epochs: 150                # Erken durma patience ile güvenli
+batch: 8                   # 4GB VRAM için; OOM alırsan 4 yap
+workers: 4
+device: 0
+half: false
+cos_lr: true               # Cosine LR: val loss daha stabil iner
+patience: 40               # 40 epoch iyileşme yoksa dur
+project: runs/detect
+name: solar_unifiedV2
+cache: false
+
+# ── Augmentation ────────────────────────────────────────────────────────────
+# Bunların hiçbiri mevcut solar_mvp3'te aktif değildi
+hsv_h: 0.015
+hsv_s: 0.7
+hsv_v: 0.4
+degrees: 10.0              # Hafif rotasyon (panel açısı değişimine karşı)
+translate: 0.1
+scale: 0.6                 # Zoom in/out (mesafe değişimine karşı)
+shear: 2.0                 # Perspektif bozulması
+flipud: 0.3                # Dikey flip — mevcut config'de 0.0 idi!
+fliplr: 0.5
+mosaic: 1.0
+mixup: 0.1
+copy_paste: 0.3            # bird_feather gibi az class için kritik
+erasing: 0.4               # Rasgele bölge silme — occlusion simüle eder
+auto_augment: randaugment
+
+# ── Loss ayarları ───────────────────────────────────────────────────────────
+cls: 1.0                   # Classification loss weight (default 0.5 → artır: imbalanced class için)
+label_smoothing: 0.1       # Overconfidence önler
+warmup_epochs: 5.0
+weight_decay: 0.0005

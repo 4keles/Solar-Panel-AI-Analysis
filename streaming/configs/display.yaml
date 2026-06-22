@@ -1,0 +1,12 @@
+bbox:
+  thickness: 2
+  font_scale: 0.6
+  font: "FONT_HERSHEY_SIMPLEX"
+  label_padding: 4
+
+hud:
+  fps_position: [10, 30]       # x, y
+  source_position: [10, 60]
+  rec_indicator_offset: [-120, 30]  # sağdan
+  text_color: [255, 255, 255]
+  background_alpha: 0.4

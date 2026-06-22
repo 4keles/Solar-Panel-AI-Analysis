@@ -1,0 +1,20 @@
+{
+  "version": "v1.0.2",
+  "created_at": "2026-03-25T20:20:50",
+  "base_model": "yolo11n.pt",
+  "deployment_mode": "local",
+  "data_modality": "rgb",
+  "dataset": {
+    "path": "data/processed_data/rgb/mvp_v1",
+    "source": "mvp_test_v1",
+    "notes": "Etiketli ilk MVP veri seti"
+  },
+  "hardware": {
+    "gpu": "unknown",
+    "vram_gb": 4,
+    "ram_gb": 16,
+    "cpu": "Ryzen 7 5800H"
+  },
+  "status": "mevcut - yeniden duzenleme oncesi egitildi",
+  "runs_source": "runs/detect/solar_mvp3"
+}

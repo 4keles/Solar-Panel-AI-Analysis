@@ -44,6 +44,11 @@ ibrahim sunum/
 SESSION_SUMMARY.md
 proje_review/
 solar_unified_project_v1.0.3/
+solar-panel-yede/
+models/v*/best/
 shorten_script.py
 streaming/output/recordings/*.mp4
 *.mp4
+streaming/output//
+*.jpg
+*.jpeg

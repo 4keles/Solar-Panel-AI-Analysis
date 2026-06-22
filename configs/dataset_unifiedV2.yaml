@@ -1,0 +1,26 @@
+# UnifiedV2 dataset — Format1 (OBB→HBB dönüştürülmüş) + Format2 birleşimi
+# Kaynak: data/processed_data/solar/unify_dataset.py ile üretildi
+# Eski unified_dataset farkları:
+#   - Float class ID yok (eski _aug dosyalarında 2.0, 3.0 vardı)
+#   - Format1/dust class kayması düzeltildi
+#   - electrical_damage → physical_damage birleştirildi
+#   - healthy/clean sınıfı kaldırıldı
+#   - OBB (9-col) → standart YOLO HBB (5-col) dönüştürüldü
+
+path: data/processed_data/solar/unifiedV2_dataset
+train: train/images
+val:   val/images
+test:  test/images
+
+nc: 6
+names:
+  0: bird_drop
+  1: bird_feather
+  2: physical_damage
+  3: dust_partical
+  4: leaf
+  5: snow
+
+modality: rgb
+version: unifiedV2
+notes: "Format1+Format2 birlesimi. Temiz integer class ID. Dogru per-folder class mapping."

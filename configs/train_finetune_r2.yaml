@@ -1,0 +1,37 @@
+# Round-2 Fine-tune — otomatik üretildi
+model: /home/kayra/git/solar_panel_od/models/v1.2.0/best.pt
+data: configs/dataset_unifiedV2.yaml
+imgsz: 640
+epochs: 100
+batch: 8
+workers: 4
+device: 0
+half: false
+cos_lr: true
+patience: 25
+project: runs
+name: solar_v1.0.5_finetune
+cache: false
+
+# Backbone donduruldu — sadece head eğitilir
+# (freeze: train.py --freeze argümanıyla verilir)
+
+# Augmentation — azalt, overfit önle
+hsv_h: 0.015
+hsv_s: 0.5
+hsv_v: 0.3
+degrees: 10.0
+translate: 0.1
+scale: 0.4
+flipud: 0.3
+fliplr: 0.5
+mosaic: 0.8
+mixup: 0.1
+copy_paste: 0.6
+erasing: 0.3
+auto_augment: randaugment
+
+cls: 2.0
+label_smoothing: 0.05
+warmup_epochs: 2.0
+weight_decay: 0.0005

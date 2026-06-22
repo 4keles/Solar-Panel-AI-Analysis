@@ -7,10 +7,6 @@ requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "4keles", email = "vibemetriconline@gmail.com" }]
 
-[project.urls]
-Repository = "https://github.com/4keles/Solar-Panel-AI-Analysis"
-"Model Hub" = "https://huggingface.co/4keles/solar-panel-od"
-
 dependencies = [
     "albumentations>=2.0.8",
     "opencv-python>=4.13.0.92",
@@ -26,6 +22,8 @@ dependencies = [
     "tensorrt-cu12>=10.0",
     "tensorrt-cu12-bindings>=10.0",
     "tensorrt-cu12-libs>=10.0",
+    "pydantic>=2.12.5",
+    "pyyaml>=6.0.3",
 ]
 
 [dependency-groups]
@@ -49,3 +47,7 @@ explicit = true
 name = "nvidia"
 url = "https://pypi.nvidia.com"
 explicit = true
+
+[project.urls]
+Repository = "https://github.com/4keles/Solar-Panel-AI-Analysis"
+"Model Hub" = "https://huggingface.co/4keles/solar-panel-od"
